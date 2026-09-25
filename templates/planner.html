@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>KumariQuest - Smart Trip Planner</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0fdfa;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #0f766e;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        .planner-box {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 35px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        select,
+        button {
+            width: 100%;
+            padding: 13px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+        }
+
+        button {
+            margin-top: 20px;
+            background: #0f766e;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #115e59;
+        }
+
+        .day {
+            background: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .day h2 {
+            color: #0f766e;
+        }
+
+        .place {
+            background: #f8fafc;
+            padding: 15px;
+            margin-top: 12px;
+            border-radius: 10px;
+        }
+
+        .place h3 {
+            margin: 0 0 8px;
+            color: #115e59;
+        }
+
+        .back {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            text-decoration: none;
+            color: #0f766e;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🗺️ Smart Trip Planner</h1>
+
+    <p class="subtitle">
+        Create a simple travel plan for your Kanyakumari trip.
+    </p>
+
+
+    <!-- Planner Form -->
+
+    <div class="planner-box">
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <label>📅 Number of Days</label>
+
+            <select name="days">
+
+                <option value="1">1 Day</option>
+                <option value="2">2 Days</option>
+                <option value="3">3 Days</option>
+                <option value="4">4 Days</option>
+                <option value="5">5 Days</option>
+
+            </select>
+
+
+            <label>🏛️ Select Interest</label>
+
+
+<select name="category">
+    <option value="All">All Categories</option>
+    <option value="Heritage">Heritage</option>
+    <option value="Beach">Beach</option>
+    <option value="Nature">Nature</option>
+    <option value="Religious">Religious</option>
+    <option value="Adventure">Adventure</option>
+</select>
+
+
+<label>👥 Trip Type</label>
+
+<select name="trip_type">
+    <option value="Family">Family</option>
+    <option value="Couple">Couple</option>
+    <option value="Solo">Solo</option>
+    <option value="Friends">Friends</option>
+</select>
+
+<label>💰 Budget</label>
+
+<select name="budget">
+
+    <option value="Budget">Budget</option>
+    <option value="Moderate">Moderate</option>
+    <option value="Luxury">Luxury</option>
+
+</select>
+
+
+
+            <button type="submit">
+                ✨ Generate My Trip
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- Generated Itinerary -->
+
+{% if itinerary %}
+
+    <h2>✨ Your Personalized Itinerary</h2>
+
+    {% if selected_trip_type %}
+        <p>
+            <strong>Trip Type:</strong>
+            {{ selected_trip_type }}
+        </p>
+    {% endif %}
+
+    {% if selected_budget %}
+    <p>
+        <strong>Budget:</strong>
+        {{ selected_budget }}
+    </p>
+{% endif %}
+
+    {% for day in itinerary %}
+
+            <div class="day">
+
+                <h2>
+                    📅 Day {{ day.day }}
+                </h2>
+
+                {% for destination in day.destinations %}
+
+                    <div class="place">
+
+                        <h3>
+                            {{ destination.name }}
+                        </h3>
+
+                        <p>
+                            <strong>Category:</strong>
+                            {{ destination.category }}
+                        </p>
+
+                        <p>
+                            <strong>Location:</strong>
+                            {{ destination.location }}
+                        </p>
+
+                        <p>
+                            {{ destination.description }}
+                        </p>
+
+                        <a
+    href="https://www.google.com/maps/search/?api=1&query={{ destination.name|urlencode }}, {{ destination.location|urlencode }}"
+    target="_blank"
+    style="
+        display: inline-block;
+        margin-top: 10px;
+        padding: 10px 15px;
+        background: #0f766e;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+    "
+>
+    📍 View on Map
+</a>
+
+                    </div>
+
+                {% empty %}
+
+                    <p>No destination available for this day.</p>
+
+                {% endfor %}
+
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+
+    <a href="/home/" class="back">
+        ← Back to Home
+    </a>
+
+</div>
+
+</body>
+</html>
